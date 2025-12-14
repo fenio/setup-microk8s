@@ -41,7 +41,8 @@ jobs:
 | `version` | microk8s version/channel to install (e.g., `1.28`, `1.29/stable`, `latest/edge`) | `latest/stable` |
 | `addons` | Comma-separated list of addons to enable (e.g., `dns,storage,ingress`) | `dns,storage` |
 | `wait-for-ready` | Wait for cluster to be ready before completing | `true` |
-| `timeout` | Timeout in seconds to wait for cluster readiness | `120` |
+| `timeout` | Timeout in seconds to wait for cluster readiness | `300` |
+| `dns-readiness` | Wait for CoreDNS to be ready and verify DNS resolution works | `true` |
 
 ## Outputs
 
