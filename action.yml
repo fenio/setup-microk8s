@@ -1,0 +1,46 @@
+name: 'Setup microk8s'
+description: 'Install and configure microk8s - Lightweight Kubernetes for CI/CD'
+author: 'fenio'
+
+branding:
+  icon: 'box'
+  color: 'blue'
+
+inputs:
+  version:
+    description: 'microk8s version/channel to install (e.g., "1.28", "1.29/stable", "latest/edge", or "latest")'
+    required: false
+    default: 'latest/stable'
+  
+  addons:
+    description: 'Comma-separated list of addons to enable (e.g., "dns,storage,ingress")'
+    required: false
+    default: 'dns,storage'
+  
+  wait-for-ready:
+    description: 'Wait for microk8s cluster to be ready before completing'
+    required: false
+    default: 'true'
+  
+  timeout:
+    description: 'Timeout in seconds to wait for cluster readiness'
+    required: false
+    default: '120'
+
+outputs:
+  kubeconfig:
+    description: 'Path to the kubeconfig file'
+    value: ${{ steps.setup.outputs.kubeconfig }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup microk8s
+      id: setup
+      shell: bash
+      env:
+        INPUT_VERSION: ${{ inputs.version }}
+        INPUT_ADDONS: ${{ inputs.addons }}
+        INPUT_WAIT_FOR_READY: ${{ inputs.wait-for-ready }}
+        INPUT_TIMEOUT: ${{ inputs.timeout }}
+      run: ${{ github.action_path }}/setup.sh

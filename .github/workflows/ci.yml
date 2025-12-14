@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-microk8s-functionality:
+    runs-on: ubuntu-latest
+    name: Test microk8s Functionality
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check initial state
+        run: |
+          echo "=== Checking Initial System State ==="
+          ! which microk8s && echo "✓ microk8s not installed initially" || (echo "✗ microk8s already installed" && exit 1)
+          
+      - name: Setup microk8s
+        id: microk8s
+        uses: ./
+        with:
+          version: 'latest/stable'
+          addons: 'dns,storage'
+          wait-for-ready: 'true'
+          timeout: '120'
+      
+      - name: Verify microk8s is installed and running
+        run: |
+          echo "=== Verifying microk8s Installation ==="
+          which microk8s && echo "✓ microk8s binary found at $(which microk8s)" || (echo "✗ microk8s binary not found" && exit 1)
+          sg microk8s -c "microk8s status" && echo "✓ microk8s cluster is running" || (echo "✗ microk8s not running" && exit 1)
+      
+      - name: Test kubectl access
+        env:
+          KUBECONFIG: ${{ steps.microk8s.outputs.kubeconfig }}
+        run: |
+          echo "=== Testing Kubernetes Functionality ==="
+          kubectl version --client
+          kubectl cluster-info
+          kubectl get nodes -o wide
+          kubectl get pods -A
+          
+      - name: Deploy test workload
+        env:
+          KUBECONFIG: ${{ steps.microk8s.outputs.kubeconfig }}
+        run: |
+          echo "=== Deploying Test Workload ==="
+          
+          kubectl create deployment nginx --image=nginx:alpine
+          kubectl expose deployment nginx --port=80 --type=ClusterIP
+          kubectl wait --for=condition=available --timeout=120s deployment/nginx
+          
+          # Test connectivity
+          POD_NAME=$(kubectl get pod -l app=nginx -o jsonpath='{.items[0].metadata.name}')
+          kubectl exec $POD_NAME -- wget -O- http://localhost:80 | grep -q "Welcome to nginx"
+          echo "✓ Workload is functioning correctly"
