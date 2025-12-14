@@ -125,9 +125,10 @@ if [ "$WAIT_FOR_READY" = "true" ]; then
           fi
           
           # Check that there are no critical pods in Error/CrashLoopBackOff state
-          CRITICAL_FAILING=$(kubectl get pods -n kube-system --no-headers 2>/dev/null | grep -cE "Error|CrashLoopBackOff" || echo "0")
+          # Use awk to check the STATUS column (3rd column) specifically
+          FAILING_PODS=$(kubectl get pods -n kube-system --no-headers 2>/dev/null | awk '$3 ~ /Error|CrashLoopBackOff|ImagePullBackOff/ {print $0}' || true)
           
-          if [ "$CRITICAL_FAILING" = "0" ] || [ "$CRITICAL_FAILING" = "" ]; then
+          if [ -z "$FAILING_PODS" ]; then
             echo "No critical pods failing"
             
             # Show cluster info
@@ -140,6 +141,7 @@ if [ "$WAIT_FOR_READY" = "true" ]; then
             break
           else
             echo "Some critical pods are failing, waiting..."
+            echo "Failing pods: $FAILING_PODS"
           fi
         else
           echo "Node not Ready yet"
