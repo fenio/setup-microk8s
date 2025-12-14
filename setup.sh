@@ -7,7 +7,7 @@ echo "Starting microk8s setup..."
 VERSION="${INPUT_VERSION:-latest/stable}"
 ADDONS="${INPUT_ADDONS:-dns,storage}"
 WAIT_FOR_READY="${INPUT_WAIT_FOR_READY:-true}"
-TIMEOUT="${INPUT_TIMEOUT:-120}"
+TIMEOUT="${INPUT_TIMEOUT:-300}"
 
 echo "Configuration: version=$VERSION, addons=\"$ADDONS\", wait-for-ready=$WAIT_FOR_READY, timeout=${TIMEOUT}s"
 

@@ -27,7 +27,7 @@ jobs:
           version: 'latest/stable'
           addons: 'dns,storage'
           wait-for-ready: 'true'
-          timeout: '120'
+          timeout: '300'
       
       - name: Verify microk8s is installed and running
         run: |
