@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
+echo "::group::Installing microk8s"
 echo "Starting microk8s setup..."
 
 # Read inputs
