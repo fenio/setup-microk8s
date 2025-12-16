@@ -9,7 +9,7 @@ A GitHub Action for installing and configuring [microk8s](https://microk8s.io/) 
 - ✅ Easy addon management (dns, storage, ingress, etc.)
 - ✅ Waits for cluster readiness
 - ✅ Outputs kubeconfig path for easy integration
-- ✅ **Simple bash-based implementation** - No Node.js dependencies required
+- ✅ No cleanup required - designed for ephemeral GitHub Actions runners
 
 ## Quick Start
 
@@ -133,16 +133,7 @@ Run `microk8s enable --help` to see all available addons.
 7. Sets up kubectl alias for convenience
 8. Optionally waits for the cluster to become fully ready
 
-The cluster remains running after your workflow completes. This works perfectly for:
-- GitHub-hosted runners (fresh VM each time)
-- Self-hosted runners where you want the cluster to persist
-
-If you need cleanup, you can add it explicitly:
-```yaml
-- name: Cleanup
-  if: always()
-  run: sudo snap remove microk8s
-```
+**No cleanup needed** - GitHub Actions runners are ephemeral and destroyed after each workflow run, so there's no need to restore system state.
 
 ## Requirements
 
@@ -208,7 +199,11 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## Related Projects
 
 - [microk8s](https://microk8s.io/) - Lightweight Kubernetes by Canonical
-- [setup-k3s](https://github.com/fenio/setup-k3s) - Lightweight Kubernetes (k3s)
-- [setup-minikube](https://github.com/fenio/setup-minikube) - Local Kubernetes
+
+### Other Kubernetes Setup Actions
+
 - [setup-k0s](https://github.com/fenio/setup-k0s) - Zero friction Kubernetes (k0s)
+- [setup-k3s](https://github.com/fenio/setup-k3s) - Lightweight Kubernetes (k3s)
 - [setup-kubesolo](https://github.com/fenio/setup-kubesolo) - Ultra-lightweight Kubernetes
+- [setup-minikube](https://github.com/fenio/setup-minikube) - Local Kubernetes (Minikube)
+- [setup-talos](https://github.com/fenio/setup-talos) - Secure, immutable Kubernetes OS (Talos)
